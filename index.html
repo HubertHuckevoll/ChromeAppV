@@ -1,0 +1,50 @@
+<!doctype html>
+<html ng-app="vineta">
+  <head>
+    <title>Vineta</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.min.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-glyphicons.css">
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script src="meTools.js"></script>
+    <script src="index.js"></script>
+    <script src="index.dctv.js"></script>
+    <script src="cams.svc.js"></script>
+    <script src="prefs.svc.js"></script>
+  </head>
+  <body ng-cloak>
+    <div ng-controller="vinetaCtrl">
+      <div class="webcam" ng-click="startStop()" ng-me-move-fade ng-me-webcam="visibleCam.url" ng-style="{'background-size': prefs.displayMode}">
+        <div id="splash"></div>
+      </div>
+      <ng-me-widget data-name="clock" ng-show="prefs.showClock" class="clock" ng-style="prefs.osdOpacity">
+        <span>{{clockHours | zeropad}}</span><span ng-me-show-fade="clockSecTick">:</span><span>{{clockMins | zeropad}}</span>
+      </ng-me-widget>
+      <!-- The following tags are updated in the image rotator! -->
+      <ng-me-widget data-name="location" class="location" ng-show="prefs.showLocation" ng-style="prefs.osdOpacity">
+        <a class="place" ng-click="gotoCamHomepage(visibleCam.homepage)"><!-- visibleCam.location --></a>
+        <div class="placeDesc"><!-- visibleCam.desc --></div>
+      </ng-me-widget>
+      <ng-me-widget data-name="weather" ng-show="prefs.showWeather" class="weather" ng-style="prefs.osdOpacity"><!-- weather.temp --></ng-me-widget>
+      <img ng-me-widget data-name="map" ng-show="prefs.showMap" class="map" ng-style="prefs.osdOpacity" ng-click="gotoFullMap()" ng-src="assets/empty.png" /><!-- mapUrl -->
+      <div id="controlPanel" ng-mouseenter="showControlPanel()" ng-mouseleave="hideControlPanel()" ng-me-roll-fade="showChrome">
+        <div class="toolbar">
+          <form class="form-inline">
+            <select class="form-control input-sm" ng-model="selectedCamSet" ng-options="set.setName for set in prefs.webcams" ng-change="setChanged()" size="1" style="vertical-align: middle; width: 150px;"></select>
+            <a class="btn btn-info btn-sm" ng-click="startStop()">{{runCaption}}</a>
+            <a class="btn btn-info btn-sm" href="prefs.html"><i class="glyphicon glyphicon-wrench glyphicon-white"></i></a>
+          </form>
+        </div>
+        <div ng-repeat="webcam in selectedCamSet.setCams" ng-class-odd="'cpStripeOdd'" ng-class-even="'cpStripeEven'">
+          <input type="checkbox" ng-model="webcam.enabled" ng-change="enableDisableWebcam()" />
+          <a ng-click="gotoCamHomepage(webcam.homepage)" style="color: black; cursor: pointer">{{webcam.location}}</a><br />
+          <a ng-click="jump($index)" target="_blank" ng-class="{isActiveCamLink: $index==visibleIdx}" class="camLink" ng-me-mousehover="{{webcam.url}}">{{webcam.desc}}</a>
+        </div>
+      </div>
+    </div>
+    <img id="tooltip" src="" />
+  </body>
+</html>

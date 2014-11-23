@@ -1,0 +1,177 @@
+<!doctype html>
+<html ng-app="vineta">
+<head>
+  <title>Preferences</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-glyphicons.css">
+  <link rel="stylesheet" type="text/css" href="prefs.css" />
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.min.js"></script>
+  <script src="meTools.js"></script>
+  <script src="index.js"></script>
+  <script src="prefs.svc.js"></script>
+  <script src="cams.svc.js"></script>
+  <script src="prefs.js"></script>
+</head>
+
+<body ng-cloak>
+
+  <div ng-controller="prefCtrl">
+
+    <div id="header">
+      <h2 class="text-muted">Preferences</h2>
+    </div>
+
+    <div ng-me-tab="manage" data-anchor="#header" data-caption="Add/Edit Webcams" data-active class="container">
+
+      <form class="col-md-8">
+        <legend>Edit</legend>
+        <div class="form-group" style="text-align: center;" ng-repeat="webcam in availableCams" ng-class-even="'even'" ng-class-odd="'odd'">
+          <img ng-src="{{webcam.url}}" style="width: 240px; display: inline-block; vertical-align: top;" />
+          <div style="display: inline-block; margin-left: 50px;">
+            <select ng-model="webcam.country" ng-options="c.code as c.country for c in countries" required class="form-control" style="width: 250px; margin-bottom: 5px;"></select>
+            <input type="text" class="form-control input-sm" required placeholder="Location" ng-model="webcam.location" style="width: 250px; margin-bottom: 5px;">
+            <input type="text" class="form-control input-sm" required placeholder="Description" ng-model="webcam.desc" style="width: 250px; margin-bottom: 5px;">
+            <input type="url"  class="form-control input-sm" required placeholder="Webcam Homepage" ng-model="webcam.homepage" style="width: 250px; margin-bottom: 5px;">
+            <input type="url"  class="form-control input-sm" required placeholder="Webcam Image URL" ng-model="webcam.url" style="width: 250px; margin-bottom: 5px;">
+            <button type="submit" class="btn" ng-click="updateCam($index)">Update</button>
+            <button type="submit" class="btn btn-danger" ng-click="rmvCam($index)"><i class="glyphicon glyphicon-trash"></i></button>
+          </div>
+        </div>
+      </form>
+
+      <form class="col-md-4">
+        <legend>Add</legend>
+        <div class="form-group">
+          <img ng-src="{{newCam.url}}" style="width: 240px; vertical-align: top; margin-bottom: 25px;" />
+          <select ng-model="newCam.country" ng-options="c.code as c.country for c in countries" required class="form-control" style="width: 250px; margin-bottom: 5px;"></select>
+          <input type="text" class="form-control input-sm" style="width: 250px; margin-bottom: 5px;" required placeholder="Location" ng-model="newCam.location">
+          <input type="text" class="form-control input-sm" style="width: 250px; margin-bottom: 5px;" required placeholder="Description" ng-model="newCam.desc">
+          <input type="url"  class="form-control input-sm" style="width: 250px; margin-bottom: 5px;" required placeholder="Webcam Homepage" ng-model="newCam.homepage">
+          <input type="url"  class="form-control input-sm" style="width: 250px; margin-bottom: 5px;" required placeholder="Webcam Image URL" ng-model="newCam.url">
+          <input type="checkbox" style="display: none;" required ng-model="newCam.enabled" />
+          <button type="submit" class="btn" ng-click="addCam()">Add</button>
+        </div>
+      </form>
+
+      <form class="col-md-4">
+        <legend>Import / Export</legend>
+        <div class="form-group">
+          <span class="help-block">Import / Export all webcams from / as JSON-file. <strong>Warning:</strong> Importing overwrites all your current webcams.</span>
+          <a class="btn btn-info" ng-click="export($event)">Export</a>
+          <span class="btn btn-warning btn-file">Import<input class="btn" type="file" id="fileInput" ng-me-file-change="import(files)"></span>
+        </div>
+      </form>
+
+    </div> <!-- Add/Edit Ende -->
+
+    <div ng-me-tab="sets" data-anchor="#header" data-caption="Webcam Sets" class="container">
+
+      <div class="row">
+        <div class="col-md-5">
+          <select multiple ng-model="selectedCams" class="form-control webcamsSelect" style="width: 100%; margin-bottom: 5px;" ng-options="(ac.location + '&nbsp;&ndash;&nbsp;' + ac.desc) for ac in availableCams" size="40"></select>
+          <button class="btn btn-default" ng-click="selectAllCams()"><i class="glyphicon glyphicon-resize-full"></i></button>
+          <button class="btn btn-default" ng-click="deselectAllCams()"><i class="glyphicon glyphicon-resize-small"></i></button>
+        </div>
+        <div class="col-md-1" style="padding-top: 25%;">
+          <button class="btn" ng-click="addCamToSet()"><i class="glyphicon glyphicon-arrow-right"></i></button>
+        </div>
+        <div class="col-md-6">
+          <div ng-repeat="set in prefs.webcams">
+            <div>
+              <a class="btn btn-info toggleSetBut" style="width: 95%;" ng-click="toggleSet($index)">{{set.setName}}</a>
+              <a ng-click="rmvSet($index)" style="cursor: pointer;"><i class="glyphicon glyphicon-trash"></i></a>
+              <br />
+            </div>
+            <ul class="setCamsBox" ng-me-slide="$index==selectedCamSet">
+              <li ng-repeat="cam in set.setCams" style="cursor: pointer;">
+                <span ng-mouseover="set.camHoveredInSet=$index">{{cam.location}}&nbsp;&ndash;&nbsp;{{cam.desc}}</span>&nbsp;
+                <a ng-show="$index==set.camHoveredInSet" ng-click="rmvCamFromSet($parent.$index, $index)"><i class="glyphicon glyphicon-trash"></i></a>
+              </li>
+              <li ng-show="set.setCams.length == 0"><em>Select one or more webcam(s) on the right and use the arrow button in the middle to add them to this set.</em></li>
+            </ul>
+          </div>
+          <br />
+          <form class="form-inline" style="width: 95%; border: 1px solid #DDD; border-radius: 5px; padding: 5px;">
+            <div class="form-group">
+              <label>Add a new set of webcams: </label>
+              <input class="form-control" style="width: 200px;" type="text" id="newSetName" ng-model="newSetName" placeholder="Enter a set name...">
+              <button class="btn btn-success" type="button" ng-click="addSet()">Add</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <div ng-me-tab="display" data-anchor="#header" data-caption="Presentation" class="container">
+
+      <form role="form" class="settingsForms">
+        <h4 class="text-info">Webcam Presentation</h4>
+        <div class="form-group">
+          <label class="range">
+            Slide Time:
+            <input class="form-control" type="range" max="60" min="1" step="1" ng-model="prefs.slideTime" /> {{prefs.slideTime | zeropad}} s
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="radio">
+            <input type="radio" ng-model="prefs.displayMode" value="cover" />Scale the image to be as large as possible and <strong>completely fill the screen</strong>. Some parts of the  image may not be in view.</label>
+          <label class="radio">
+            <input type="radio" ng-model="prefs.displayMode" value="contain" />Scale the image to the largest size, but such that both its width and its height can <strong>fit inside the content area</strong>.</label>
+        </div>
+      </form>
+
+      <form role="form" class="settingsForms">
+        <h4 class="text-info">Widgets</h4>
+        <div class="form-group">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="prefs.showClock" />
+            Show Clock
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" ng-model="prefs.showLocation" />
+            Show Location
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" ng-model="prefs.showWeather" />
+            Show Temperature (Temp. - &deg;C) if available
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" ng-model="prefs.showMap" />
+            Show Map
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" ng-model="prefs.autoHideOverlays" />
+            Hide widgets after 3s, move mouse to show them again
+          </label>
+          <hr />
+          <label class="range">
+            Opacity:
+            <input class="form-control" type="range" max="1" min="0" step=".1" ng-model="prefs.osdOpacity.opacity" />&nbsp;{{prefs.osdOpacity.opacity}}
+          </label>
+          <hr />
+          <div class="form-group">
+            <button ng-click="resetWidgetPos()">Reset widget positions</button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+
+    <div class="footer">
+      <button class="btn btn-success" ng-click="apply()">Apply</button>&nbsp;&nbsp;
+      <button class="btn btn-warning" ng-click="reset()">Reset</button>&nbsp;&nbsp;
+      <span id="justStored" ng-show="justStored">Saved.</span>
+      <br /><br />
+      Vineta <span ng-me-ver></span> &ndash; <a href="#">MeyerK 2013/01ff</a>. Rocked by AngularJS, Bootstrap, OpenWeatherMap, jQuery.
+    </div>
+
+    <div class="status" ng-me-notify="status"></div>
+
+  </div> <!-- prefCtrl -->
+
+</body>
+</html>

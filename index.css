@@ -1,0 +1,122 @@
+body {
+  background-color: #191919;
+}
+
+#controlPanel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 325px;
+  background-color: #fafafa;
+  padding: 0;
+  text-align: left;
+  overflow: auto;
+}
+
+.cpStripeOdd {
+  background-color: #eee;
+  padding: 2px 2px 2px 10px;
+}
+
+.cpStripeEven {
+  background-color: white;
+  padding: 2px 2px 2px 10px;
+}
+
+.toolbar {
+  text-align: left;
+  vertical-align: middle;
+  margin-bottom: 5px;
+  padding: 5px;
+}
+
+.clock {
+  position: absolute;
+  top: 35px;
+  left: 35px;
+  font-size: 5vw;
+  color: white;
+  text-shadow: 1px  1px 1px black, 1px -1px 1px black, -1px  1px 1px black, -1px -1px 1px black;
+}
+
+.clockDots {
+  opacity: 0;
+}
+
+.location {
+  position: absolute;
+  bottom: 75px;
+  right: 35px;
+  text-align: right;
+  color: white;
+  text-shadow: 1px  1px 1px black, 1px -1px 1px black, -1px  1px 1px black, -1px -1px 1px black;
+}
+
+.location .place {
+  font-size: 2vw;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.location .placeDesc {
+  font-size: 1vw;
+}
+
+.weather {
+  position: absolute;
+  top: 35px;
+  right: 35px;
+  font-size: 5vw;
+  /*font-family: 'Roboto', sans-serif;*/
+  color: white;
+  text-shadow: 1px  1px 1px black, 1px -1px 1px black, -1px  1px 1px black, -1px -1px 1px black;
+}
+
+.map {
+  position: absolute;
+  bottom: 35px;
+  left: 35px;
+  background-color: white;
+}
+
+#splash {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: url(./assets/ajax-loader.gif) center center fixed no-repeat;
+}
+
+.webcam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  background: url(./assets/backdrop.jpg) no-repeat fixed center center #191919;
+  -webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+  cursor: pointer;
+}
+
+.camLink {
+  cursor: pointer;
+}
+
+.isActiveCamLink {
+  font-weight: bold;
+}
+
+#tooltip {
+  position: absolute;
+  bottom: 20px;
+  right: 340px;
+  height: 240px;
+  display: none;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+}
