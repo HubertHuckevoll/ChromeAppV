@@ -1,12 +1,12 @@
 app.directive('ngMeWebcam', function () {
-    return function (scope, element, attrs) 
+    return function (scope, element, attrs)
     {
       var fadeTime = 750;
       var pImg = new Image();
       var pImg = $(pImg);
       var jetzt = new Date();
       var nUrl = '';
-      var overlays = $();      
+      var overlays = $();
       if (scope.prefs.showLocation) overlays = overlays.add('.location');
       if (scope.prefs.showWeather)  overlays = overlays.add('.weather');
       if (scope.prefs.showMap)      overlays = overlays.add('.map');
@@ -30,7 +30,7 @@ app.directive('ngMeWebcam', function () {
         });
       });
 
-      scope.$watch(attrs.ngMeWebcam, function(url) 
+      scope.$watch(attrs.ngMeWebcam, function(url)
       {
         if (url !== undefined) {
           jetzt = new Date();
@@ -103,15 +103,16 @@ app.directive('ngMeWidget', function() {
       var offsetX = null;
       var wN = attrs['name']; // widget class = name
 
-      var wPrefs = JSON.parse(localStorage.getItem('vineta.'+wN));
-      if (wPrefs != null) {
-        element.css({
-          'left': wPrefs.posX,
-          'top': wPrefs.posY,
-          'bottom': 'auto',
-          'right': 'auto'
-        });
-      }
+      chrome.storage.local.get('vineta.'+wN, function(wPrefs) {
+        if (wPrefs != null) {
+          element.css({
+            'left': wPrefs.posX,
+            'top': wPrefs.posY,
+            'bottom': 'auto',
+            'right': 'auto'
+          });
+        }
+      });
 
       element.on('dragstart', function(ev) {
         element.css('border', '2px dashed tomato');
@@ -134,7 +135,7 @@ app.directive('ngMeWidget', function() {
         console.log(ev.originalEvent.screenX, offsetX);
         //console.log(wPrefs.posY);
 
-        localStorage.setItem('vineta.'+wN, JSON.stringify(wPrefs));
+        chrome.storage.local.set('vineta.'+wN, JSON.stringify(wPrefs));
 
         element.css('border', 'none');
         element.css({

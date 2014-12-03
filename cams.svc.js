@@ -24,20 +24,21 @@ app.factory('camsSvc', function($http) {
           });
         }
 
-        var lcams = JSON.parse(localStorage.getItem('vineta.availableCams'));
-        if (lcams !== null) {
-          this.cams = angular.copy(lcams);
-        }
+        chrome.storage.local.get('vineta.availableCams', function(lcams) {
+          if (lcams !== null) {
+            this.cams = angular.copy(lcams);
+          }
+        });
 
         return this.cams;
       },
 
       put: function(cams) {
-        localStorage.setItem('vineta.availableCams', JSON.stringify(cams));
+        chrome.storage.local.set('vineta.availableCams', JSON.stringify(cams));
       },
 
       reset: function() {
-        localStorage.removeItem('vineta.availableCams');
+        chrome.storage.locale.remove('vineta.availableCams');
       }
 
     };

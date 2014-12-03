@@ -16,10 +16,11 @@ app.factory('prefsSvc', function($http, camsSvc) {
           webcams: []
         };
 
-        var lPrefs = JSON.parse(chrome.storage.local.get('vineta.prefs'));
-        if (lPrefs !== null) {
-          prefs = angular.copy(lPrefs);
-        }
+        chrome.storage.local.get('vineta.prefs', function(lPrefs) {
+          if (lPrefs !== null) {
+            prefs = angular.copy(lPrefs);
+          }
+        });
 
         if (prefs.webcams.length === 0) {
           var availableCams = camsSvc.get();
