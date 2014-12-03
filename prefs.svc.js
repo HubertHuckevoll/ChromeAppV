@@ -16,7 +16,7 @@ app.factory('prefsSvc', function($http, camsSvc) {
           webcams: []
         };
 
-        var lPrefs = JSON.parse(localStorage.getItem('vineta.prefs'));
+        var lPrefs = JSON.parse(chrome.storage.local.get('vineta.prefs'));
         if (lPrefs !== null) {
           prefs = angular.copy(lPrefs);
         }
@@ -33,11 +33,11 @@ app.factory('prefsSvc', function($http, camsSvc) {
       },
 
       put: function(prefs) {
-        localStorage.setItem('vineta.prefs', JSON.stringify(prefs));
+        chrome.storage.local.set('vineta.prefs', JSON.stringify(prefs));
       },
 
       reset: function(success) {
-        localStorage.removeItem('vineta.prefs');
+        chrome.storage.local.remove('vineta.prefs');
         this.get(success);
       }
 
