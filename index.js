@@ -8,11 +8,11 @@ app.controller('vinetaCtrl', function ($scope, $http, $timeout, prefsSvc) {
 
   $scope.selectedCamSet = {};
 
-  $scope.visibleCam = {},
-  $scope.weather = {'temp': 'n/a'},
-  $scope.visibleIdx = -1,
-  $scope.run = null,
-  $scope.runCaption = 'Start',
+  $scope.visibleCam = {};
+  $scope.weather = {'temp': 'n/a'};
+  $scope.visibleIdx = -1;
+  $scope.run = null;
+  $scope.runCaption = 'Start';
 
   $scope.showChrome = false;
   $scope.delayChromeH = null;
