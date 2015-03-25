@@ -52,7 +52,7 @@ app.controller('vinetaCtrl', function ($scope, $http, $timeout, prefsSvc) {
       $timeout.cancel($scope.run);
       $scope.run = null;
       $scope.visibleIdx = -1;
-      $scope.visibleCam = {},
+      $scope.visibleCam = {};
       $scope.runCaption = 'Start';
     }
   };
