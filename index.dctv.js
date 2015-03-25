@@ -2,8 +2,7 @@ app.directive('ngMeWebcam', function () {
     return function (scope, element, attrs)
     {
       var fadeTime = 750;
-      var pImg = new Image();
-      var pImg = $(pImg);
+      var pImg = new Image(); pImg = $(pImg);
       var jetzt = new Date();
       var nUrl = '';
       var overlays = $();
